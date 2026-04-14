@@ -4,6 +4,10 @@
 node_modules/
 .env 
 
+# Supabase local dev
+supabase/.temp/
+supabase/migrations/.internal/
+
 # Expo
 .expo/
 dist/
