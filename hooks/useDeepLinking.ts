@@ -1,7 +1,7 @@
+import { useEffect } from "react";
 import { supabase } from "@/lib/utils/supabase";
 import * as QueryParams from "expo-auth-session/build/QueryParams";
 import { useLinkingURL } from "expo-linking";
-import { useEffect } from "react";
 import { toast } from "sonner-native";
 
 const createSessionFromUrl = async (url: string) => {
@@ -30,7 +30,6 @@ const createSessionFromUrl = async (url: string) => {
       throw error;
     }
 
-    console.log("✅ Magic link verified:", data.session?.user?.email);
     return data.session;
   }
 
@@ -49,7 +48,6 @@ const createSessionFromUrl = async (url: string) => {
     throw error;
   }
 
-  console.log("✅ OAuth session created");
   return data.session;
 };
 
@@ -58,7 +56,6 @@ export const useDeepLinking = () => {
 
   useEffect(() => {
     if (url) {
-      // console.log("🔍 Deep link URL:", url);
       createSessionFromUrl(url)
         .then((session) => {
           if (session) {

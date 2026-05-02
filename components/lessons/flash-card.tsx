@@ -1,6 +1,6 @@
-import { Word } from "@/constants/course-data";
 import { useRef, useState } from "react";
 import { Animated, Pressable, StyleSheet, View } from "react-native";
+import { Word } from "@/constants/course-data";
 import { ThemedText } from "../themed-text";
 
 export default function Flashcard({

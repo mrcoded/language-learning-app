@@ -1,14 +1,13 @@
-import { SpeakingOption } from "@/constants/course-data";
-import { Colors } from "@/constants/theme";
 import React, { useState } from "react";
 import {
   Animated,
   Platform,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SpeakingOption } from "@/constants/course-data";
+import { Colors } from "@/constants/theme";
 import { ThemedText } from "../themed-text";
 
 export default function SingleResponseMode({
