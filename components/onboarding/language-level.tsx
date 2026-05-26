@@ -7,16 +7,14 @@ import { ThemedText } from "../themed-text";
 export default function LanguageLevel({
   level,
   setLevel,
-  localLanguage,
 }: {
-  localLanguage: string;
   setLevel: (level: string) => void;
   level: string | null;
 }) {
   return (
     <View style={styles.stepContainer}>
       <ThemedText type="title" style={styles.title}>
-        How much {localLanguage} do you know?
+        How much mandarin do you know?
       </ThemedText>
 
       <ScrollView
@@ -38,9 +36,11 @@ export default function LanguageLevel({
             <ThemedText
               style={[
                 styles.optionsTitle,
-                level === option.id && {
-                  color: Colors.primaryAccentColor,
-                },
+                level === option.id
+                  ? {
+                      color: Colors.primaryAccentColor,
+                    }
+                  : { color: Colors.subduedTextColor },
               ]}
             >
               {option.title}

@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  StyleSheet,
+  TouchableOpacity,
+  useColorScheme,
+  View,
+} from "react-native";
 import { Colors } from "@/constants/theme";
 import { ThemedText } from "@/components/themed-text";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -12,6 +18,9 @@ import { supabase } from "@/lib/utils/supabase";
 import Paywall from "@/components/subscription/paywall";
 
 export default function Profile() {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme === "dark" ? "dark" : "light"];
+
   const { isPremium, premiumExpiresAt, profile, user } = useAuth();
   const [paywallVisible, setPaywallVisible] = useState(false);
   const { stats, loading } = useSpeakingListeningStats();
@@ -38,7 +47,7 @@ export default function Profile() {
 
   return (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: Colors.light.background }}
+      style={{ flex: 1, backgroundColor: colors.background }}
       edges={["top", "left", "right"]}
     >
       <View style={styles.container}>
@@ -58,7 +67,7 @@ export default function Profile() {
             style={[
               styles.profileCard,
               {
-                backgroundColor: Colors.light.background,
+                backgroundColor: colors.background,
                 borderColor: Colors.borderColor,
               },
             ]}
@@ -181,7 +190,12 @@ export default function Profile() {
                     size={24}
                     color={Colors.subduedTextColor}
                   />
-                  <ThemedText style={styles.menuItemTitle}>
+                  <ThemedText
+                    style={[
+                      styles.menuItemTitle,
+                      { color: Colors.subduedTextColor },
+                    ]}
+                  >
                     App Settings
                   </ThemedText>
                 </View>
@@ -206,7 +220,12 @@ export default function Profile() {
                     size={24}
                     color={Colors.subduedTextColor}
                   />
-                  <ThemedText style={styles.menuItemTitle}>
+                  <ThemedText
+                    style={[
+                      styles.menuItemTitle,
+                      { color: Colors.subduedTextColor },
+                    ]}
+                  >
                     Help & Support
                   </ThemedText>
                 </View>

@@ -1,7 +1,8 @@
-import React from "react";
 import { Colors } from "@/constants/theme";
+import { Question } from "@/types/course-data";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import React from "react";
 import {
   Animated,
   Platform,
@@ -12,7 +13,6 @@ import {
 } from "react-native";
 import { ThemedText } from "../themed-text";
 import AudioWavform from "./audio-wav-form";
-import { Question } from "@/constants/course-data";
 
 export default function AudioPrompt({
   isPlaying,
@@ -48,6 +48,7 @@ export default function AudioPrompt({
   fadeAnimation: Animated.Value;
 }) {
   const playbackDisabled = !selectedOption && (isPlaying || hasListenedToAudio);
+
   return (
     <>
       <Pressable

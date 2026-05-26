@@ -1,8 +1,8 @@
+import { Colors } from "@/constants/theme";
+import { Question, Word } from "@/types/course-data";
+import { router } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
-import { Question, Word } from "@/constants/course-data";
-import { Colors } from "@/constants/theme";
-import { router } from "expo-router";
 import { ThemedText } from "../themed-text";
 import ConfirmDialog from "../ui/confirm-dialog";
 import FlashCard from "./flash-card";
@@ -198,7 +198,12 @@ export default function VocabularyIntroScreen({
 
       <View style={styles.content}>
         <View style={styles.instructionContainer}>
-          <ThemedText style={styles.instructionTitle}>
+          <ThemedText
+            style={[
+              styles.instructionTitle,
+              { color: Colors.subduedTextColor },
+            ]}
+          >
             Lesson Vocabulary
           </ThemedText>
           <ThemedText style={styles.instructionText}>

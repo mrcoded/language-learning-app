@@ -29,7 +29,6 @@ export default function OnboardingScreen() {
   const [step, setStep] = useState(0);
   const [name, setName] = useState("");
   const [showPaywall, setShowPaywall] = useState(false);
-  const [localLanguage, setLocalLanguage] = useState("");
   const [level, setLevel] = useState<string | null>(null);
   const [motivations, setMotivations] = useState<string[]>([]);
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
@@ -44,7 +43,7 @@ export default function OnboardingScreen() {
   };
 
   const isNextEnabled = () => {
-    if (step === 0) return name.trim() !== "" && localLanguage.trim() !== "";
+    if (step === 0) return name.trim() !== "";
     if (step === 1) return !!level;
     if (step === 2) return motivations.length > 0;
     if (step === 3) return selectedInterests.length > 0;
@@ -62,11 +61,10 @@ export default function OnboardingScreen() {
       const { error } = await supabase.from("profiles").upsert({
         id: user.id,
         full_name: name,
-        language_choice: localLanguage,
-        language_level: level,
         motivations: motivations,
         interests: selectedInterests,
         onboarding_completed: true,
+        language_level: level,
         updated_at: new Date().toISOString(),
       });
 
@@ -123,28 +121,14 @@ export default function OnboardingScreen() {
             exiting={FadeOut.duration(500)}
             style={{ flex: 1 }}
           >
-            {step === 0 && (
-              <PersonalInfo
-                name={name}
-                setName={setName}
-                localLanguage={localLanguage}
-                setLocalLanguage={setLocalLanguage}
-              />
-            )}
+            {step === 0 && <PersonalInfo name={name} setName={setName} />}
 
-            {step === 1 && (
-              <LanguageLevel
-                level={level}
-                setLevel={setLevel}
-                localLanguage={localLanguage}
-              />
-            )}
+            {step === 1 && <LanguageLevel level={level} setLevel={setLevel} />}
 
             {step === 2 && (
               <Motivation
                 motivations={motivations}
                 setMotivations={setMotivations}
-                localLanguage={localLanguage}
               />
             )}
 

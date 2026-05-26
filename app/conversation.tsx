@@ -1,10 +1,10 @@
+import ConversationMode from "@/components/conversations/conversation-mode";
 import { getCustomScenario } from "@/lib/customScenario";
+import { ConversationScenario, COURSE_DATA } from "@/types/course-data";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ConversationScenario, COURSE_DATA } from "@/constants/course-data";
-import ConversationMode from "@/components/conversations/conversation-mode";
 
 const firstParam = (value?: string | string[]) =>
   Array.isArray(value) ? value[0] : value;

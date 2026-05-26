@@ -1,24 +1,27 @@
+import { ThemedText } from "@/components/themed-text";
+import { Colors } from "@/constants/theme";
+import { useSpeakingListeningStats } from "@/hooks/use-speaking-listening-stats";
+import { getAllProgress } from "@/lib/lesson-progress";
+import { Chapter, COURSE_DATA, Lesson } from "@/types/course-data";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { router, useFocusEffect } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
+  useColorScheme,
   View,
 } from "react-native";
-import { ThemedText } from "@/components/themed-text";
-import { Chapter, COURSE_DATA, Lesson } from "@/constants/course-data";
-import { Colors } from "@/constants/theme";
-import { useSpeakingListeningStats } from "@/hooks/use-speaking-listening-stats";
-import { getAllProgress } from "@/lib/lesson-progress";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { router, useFocusEffect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const MAX_STARS = 3;
 
 export default function LessonsContent() {
-  const colors = Colors["light"];
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme === "dark" ? "dark" : "light"];
+
   const { stats, loading, refreshStats } = useSpeakingListeningStats();
   const [progress, setProgress] = useState<Record<string, number>>({});
 
@@ -109,7 +112,9 @@ export default function LessonsContent() {
             color={Colors.primaryAccentColor}
           />
           <View style={styles.lessonTextContainer}>
-            <ThemedText style={styles.lessonTitle}>{lesson.title}</ThemedText>
+            <ThemedText style={[styles.lessonTitle, { color: colors.text }]}>
+              {lesson.title}
+            </ThemedText>
             {renderCompletionStatus(completionCount)}
           </View>
         </TouchableOpacity>
@@ -124,10 +129,15 @@ export default function LessonsContent() {
     >
       <View style={styles.container}>
         <View
-          style={[styles.header, { borderBottomColor: Colors.borderColor }]}
+          style={[
+            styles.header,
+            { borderBottomColor: Colors.dark.borderColor },
+          ]}
         >
           <TouchableOpacity>
-            <ThemedText style={styles.headerTitle}>This week</ThemedText>
+            <ThemedText style={[styles.headerTitle, { color: colors.text }]}>
+              This week
+            </ThemedText>
             <ThemedText
               style={[
                 styles.headerSubtitle,
@@ -141,7 +151,7 @@ export default function LessonsContent() {
           <View style={styles.headerRight}>
             <TouchableOpacity style={styles.statItem}>
               <View style={styles.statValueContainer}>
-                <ThemedText style={styles.statValue}>
+                <ThemedText style={[styles.statValue, { color: colors.text }]}>
                   {loading ? "-" : Math.floor(stats?.minutesSpoken ?? 0)}
                 </ThemedText>
                 <Ionicons
@@ -172,7 +182,7 @@ export default function LessonsContent() {
           <View style={styles.headerRight}>
             <TouchableOpacity style={styles.statItem}>
               <View style={styles.statValueContainer}>
-                <ThemedText style={styles.statValue}>
+                <ThemedText style={[styles.statValue, { color: colors.text }]}>
                   {loading ? "-" : Math.floor(stats?.minutesListened ?? 0)}
                 </ThemedText>
                 <Ionicons
@@ -200,7 +210,6 @@ export default function LessonsContent() {
           showsVerticalScrollIndicator={false}
         >
           {COURSE_DATA.chapters.map((chapter) => {
-            console.log(chapter.id);
             return (
               <View key={chapter.id} style={styles.chapterContainer}>
                 <View style={styles.chapterHeader}>
@@ -275,6 +284,7 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 18,
     fontWeight: "bold",
+    color: Colors.light.text,
   },
   statChangePositive: {
     fontSize: 14,

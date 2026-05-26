@@ -36,7 +36,11 @@ export default function ConfirmDialog({
             {title}
           </ThemedText>
           {description ? (
-            <ThemedText style={styles.description}>{description}</ThemedText>
+            <ThemedText
+              style={[styles.description, { color: Colors.subduedTextColor }]}
+            >
+              {description}
+            </ThemedText>
           ) : null}
 
           <View style={styles.actions}>
@@ -44,7 +48,12 @@ export default function ConfirmDialog({
               style={[styles.button, styles.cancel]}
               onPress={onCancel}
             >
-              <ThemedText type="defaultSemiBold">{cancelLabel}</ThemedText>
+              <ThemedText
+                type="defaultSemiBold"
+                style={{ color: Colors.subduedTextColor }}
+              >
+                {cancelLabel}
+              </ThemedText>
             </Pressable>
 
             <Pressable
@@ -101,6 +110,7 @@ const styles = StyleSheet.create({
   },
   cancel: {
     backgroundColor: "rgba(0,0,0,0.06)",
+    color: "#FFFFFF",
   },
   confirm: {
     backgroundColor: Colors.primaryAccentColor,

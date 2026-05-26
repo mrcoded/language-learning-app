@@ -1,6 +1,13 @@
+import { Colors } from "@/constants/theme";
+import { Word } from "@/types/course-data";
 import { useRef, useState } from "react";
-import { Animated, Pressable, StyleSheet, View } from "react-native";
-import { Word } from "@/constants/course-data";
+import {
+  Animated,
+  Pressable,
+  StyleSheet,
+  useColorScheme,
+  View,
+} from "react-native";
 import { ThemedText } from "../themed-text";
 
 export default function Flashcard({
@@ -10,6 +17,9 @@ export default function Flashcard({
   word: Word;
   direction: "en-zh" | "zh-en";
 }) {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme === "dark" ? "dark" : "light"];
+
   const [isFlipped, setIsFlipped] = useState(false);
   const flipAnimation = useRef(new Animated.Value(0)).current;
 
@@ -58,8 +68,12 @@ export default function Flashcard({
 
     return (
       <View style={styles.mandarinContent}>
-        <ThemedText style={styles.pinyin}>{word.pinyin}</ThemedText>
-        <ThemedText style={styles.hanzi}>{word.hanzi}</ThemedText>
+        <ThemedText style={[styles.pinyin, { color: Colors.subduedTextColor }]}>
+          {word.pinyin}
+        </ThemedText>
+        <ThemedText style={[styles.hanzi, { color: Colors.subduedTextColor }]}>
+          {word.hanzi}
+        </ThemedText>
       </View>
     );
   };
@@ -89,7 +103,12 @@ export default function Flashcard({
     <Pressable onPress={isFlipped ? flipToFront : flipToBack}>
       <View>
         <Animated.View
-          style={[styles.card, styles.cardFront, frontAnimatedStyle]}
+          style={[
+            styles.card,
+            styles.cardFront,
+            frontAnimatedStyle,
+            { backgroundColor: colors.background },
+          ]}
         >
           {FrontContent()}
         </Animated.View>
@@ -121,7 +140,6 @@ const styles = StyleSheet.create({
     paddingVertical: 48,
   },
   cardFront: {
-    backgroundColor: "#fff",
     borderWidth: 1,
     borderColor: "#e5e7eb",
   },

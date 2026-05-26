@@ -1,5 +1,5 @@
-import { SpeakingOption } from "@/constants/course-data";
 import { Colors } from "@/constants/theme";
+import { SpeakingOption } from "@/types/course-data";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {
   Animated,
@@ -45,7 +45,10 @@ export default function MultipleChoiceMode({
             ],
           }}
         >
-          <ThemedText type="subtitle" style={styles.sectionTitle}>
+          <ThemedText
+            type="subtitle"
+            style={[styles.sectionTitle, { color: Colors.subduedTextColor }]}
+          >
             Choose your response:
           </ThemedText>
         </Animated.View>
@@ -117,7 +120,12 @@ export default function MultipleChoiceMode({
                 disabled={isLoading || showResult}
               >
                 <View style={styles.optionContent}>
-                  <ThemedText style={styles.optionText}>
+                  <ThemedText
+                    style={[
+                      styles.optionText,
+                      { color: Colors.subduedTextColor },
+                    ]}
+                  >
                     {option.english}
                   </ThemedText>
                   {isSelected && (

@@ -23,7 +23,9 @@ export default function ProgressHeader({
         <View style={styles.progressBar}>
           <View style={[styles.progressFill, { width: `${progress}%` }]}></View>
         </View>
-        <ThemedText style={styles.progressText}>
+        <ThemedText
+          style={[styles.progressText, { color: Colors.subduedTextColor }]}
+        >
           {currentCount}/{totalCount}
         </ThemedText>
       </View>

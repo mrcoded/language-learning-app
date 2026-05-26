@@ -7,11 +7,9 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function Motivation({
   motivations,
-  localLanguage,
   setMotivations,
 }: {
   motivations: string[];
-  localLanguage: string;
   setMotivations: (motivations: string[]) => void;
 }) {
   const colors = Colors["light"];
@@ -27,7 +25,7 @@ export default function Motivation({
   return (
     <View style={styles.stepContainer}>
       <ThemedText type="title" style={styles.title}>
-        Why are you learning {localLanguage}?
+        Why are you learning mandarin?
       </ThemedText>
       <ThemedText type="title" style={styles.subTitle}>
         Select all that applies. This will help us personalize your learning
@@ -62,9 +60,13 @@ export default function Motivation({
               <ThemedText
                 style={[
                   styles.optionsTitle,
-                  isSelected && {
-                    color: Colors.primaryAccentColor,
-                  },
+                  isSelected
+                    ? {
+                        color: Colors.primaryAccentColor,
+                      }
+                    : {
+                        color: Colors.subduedTextColor,
+                      },
                 ]}
               >
                 {option.title}

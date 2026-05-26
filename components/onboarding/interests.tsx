@@ -48,9 +48,13 @@ export default function Interests({
               <ThemedText
                 style={[
                   styles.tagText,
-                  isSelected && {
-                    color: "#FFF",
-                  },
+                  isSelected
+                    ? {
+                        color: "#FFF",
+                      }
+                    : {
+                        color: Colors.subduedTextColor,
+                      },
                 ]}
               >
                 {interest}

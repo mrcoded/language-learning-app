@@ -1,4 +1,4 @@
-import { ConversationScenario } from "@/constants/course-data";
+import { ConversationScenario } from "@/types/course-data";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import uuid from "react-native-uuid";
 

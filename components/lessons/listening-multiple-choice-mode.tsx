@@ -1,3 +1,5 @@
+import { Colors } from "@/constants/theme";
+import { ListeningOption } from "@/types/course-data";
 import {
   Platform,
   Pressable,
@@ -6,8 +8,6 @@ import {
   View,
 } from "react-native";
 import { ThemedText } from "../themed-text";
-import { Colors } from "@/constants/theme";
-import { ListeningOption } from "@/constants/course-data";
 
 export default function ListeningMultipleChoiceMode({
   options,

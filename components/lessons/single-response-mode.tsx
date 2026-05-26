@@ -1,3 +1,5 @@
+import { Colors } from "@/constants/theme";
+import { SpeakingOption } from "@/types/course-data";
 import React, { useState } from "react";
 import {
   Animated,
@@ -6,8 +8,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SpeakingOption } from "@/constants/course-data";
-import { Colors } from "@/constants/theme";
 import { ThemedText } from "../themed-text";
 
 export default function SingleResponseMode({
@@ -46,7 +46,12 @@ export default function SingleResponseMode({
       <View
         style={[styles.singleResponseContainer, { backgroundColor: "#ffffff" }]}
       >
-        <ThemedText style={styles.singleResponseEnglish}>
+        <ThemedText
+          style={[
+            styles.singleResponseEnglish,
+            { color: Colors.subduedTextColor },
+          ]}
+        >
           {option.english}
         </ThemedText>
         <TouchableOpacity
