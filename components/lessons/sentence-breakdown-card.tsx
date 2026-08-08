@@ -8,6 +8,7 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  useColorScheme,
   View,
 } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
@@ -47,6 +48,8 @@ export default function SentenceBreakdownCard({
   };
   disabled?: boolean;
 }) {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme === "dark" ? "dark" : "light"];
   const insets = useSafeAreaInsets();
   const translateY = useSharedValue(CLOSED_POSITION);
   const context = useSharedValue({ y: 0 });
@@ -166,7 +169,7 @@ export default function SentenceBreakdownCard({
           >
             <ThemedText
               style={[
-                type === "hanzi" ? styles.hanziValue : styles.pinyinValue,
+                type === "hanzi" ? [styles.hanziValue, { color: colors.text }] : [styles.pinyinValue, { color: colors.text }],
                 selectedWord &&
                   selectedWord.type === type &&
                   selectedWord.index === index &&
@@ -188,6 +191,8 @@ export default function SentenceBreakdownCard({
       style={[
         styles.cardContainer,
         {
+          backgroundColor: colors.cardBackground,
+          borderColor: colors.borderColor,
           height: CARD_MAX_HEIGHT + insets.bottom,
           paddingBottom: insets.bottom,
           opacity: disabled ? 0.6 : 1,
@@ -206,12 +211,12 @@ export default function SentenceBreakdownCard({
           }}
           style={styles.handleContainer}
         >
-          <View style={styles.handle}></View>
+          <View style={[styles.handle, { backgroundColor: colors.borderColor }]}></View>
         </Pressable>
 
         <View style={styles.peekContent}>
-          <Ionicons name="help-circle-outline" size={24} color="#9ca3af" />
-          <ThemedText style={styles.peekText}>
+          <Ionicons name="help-circle-outline" size={24} color={colors.subduedText} />
+          <ThemedText style={[styles.peekText, { color: colors.subduedText }]}>
             Swipe up for detailed help
           </ThemedText>
         </View>
@@ -220,21 +225,21 @@ export default function SentenceBreakdownCard({
           style={styles.fullContent}
           showsVerticalScrollIndicator={false}
         >
-          <ThemedText style={styles.title}>Sentence Breakdown</ThemedText>
+          <ThemedText style={[styles.title, { color: colors.text }]}>Sentence Breakdown</ThemedText>
 
           <View style={styles.wordHintContainer}>
-            <ThemedText style={styles.wordHintText}>
+            <ThemedText style={[styles.wordHintText, { color: colors.subduedText }]}>
               Tap any word to see its meaning
             </ThemedText>
           </View>
 
           <View style={styles.breakdownItem}>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <ThemedText style={styles.label}>Pinyin:</ThemedText>
+              <ThemedText style={[styles.label, { color: colors.subduedText }]}>Pinyin:</ThemedText>
               <Pressable
                 onPress={playAudio}
                 disabled={disabled}
-                style={styles.playButton}
+                style={[styles.playButton, { borderColor: colors.borderColor }]}
                 hitSlop={8}
               >
                 <Ionicons
@@ -247,18 +252,18 @@ export default function SentenceBreakdownCard({
             {renderInteractiveSentence("pinyin")}
           </View>
           <View style={styles.breakdownItem}>
-            <ThemedText style={styles.label}>Hanzi:</ThemedText>
+            <ThemedText style={[styles.label, { color: colors.subduedText }]}>Hanzi:</ThemedText>
             {renderInteractiveSentence("hanzi")}
           </View>
           <View style={styles.breakdownItem}>
-            <ThemedText style={styles.label}>English:</ThemedText>
-            <ThemedText style={styles.englishValue}>
+            <ThemedText style={[styles.label, { color: colors.subduedText }]}>English:</ThemedText>
+            <ThemedText style={[styles.englishValue, { color: colors.text }]}>
               {sentence.english}
             </ThemedText>
           </View>
           <View style={styles.breakdownItem}>
-            <ThemedText style={styles.label}>Breakdown:</ThemedText>
-            <ThemedText style={styles.breakdownText}>
+            <ThemedText style={[styles.label, { color: colors.subduedText }]}>Breakdown:</ThemedText>
+            <ThemedText style={[styles.breakdownText, { color: colors.text }]}>
               {sentence.breakdown}
             </ThemedText>
           </View>
@@ -270,6 +275,8 @@ export default function SentenceBreakdownCard({
           style={[
             styles.tooltipContainer,
             {
+              backgroundColor: colors.cardSecondaryBackground,
+              borderColor: colors.borderColor,
               top: tooltip.y - 48,
               left: Math.max(
                 8,
@@ -284,7 +291,7 @@ export default function SentenceBreakdownCard({
             tooltipWidthRef.current = e.nativeEvent.layout.width;
           }}
         >
-          <ThemedText style={styles.tooltipText}>{tooltip.text}</ThemedText>
+          <ThemedText style={[styles.tooltipText, { color: colors.text }]}>{tooltip.text}</ThemedText>
         </View>
       )}
     </Animated.View>
@@ -303,17 +310,15 @@ const styles = StyleSheet.create({
     bottom: -CARD_MIN_HEIGHT,
     left: 0,
     right: 0,
-    backgroundColor: "#fff",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     borderTopWidth: 1,
-    borderColor: "#e5e7eb",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: -8 },
     shadowOpacity: 0.08,
     shadowRadius: 12,
-    elevation: 8, // lowered so it sits behind the result
-    zIndex: 0, // ensure this is lower than the result overlay
+    elevation: 8,
+    zIndex: 0,
   },
   handleContainer: {
     alignItems: "center",
@@ -323,7 +328,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 5,
     borderRadius: 2.5,
-    backgroundColor: "#e5e7eb",
   },
   peekContent: {
     flexDirection: "row",
@@ -334,7 +338,6 @@ const styles = StyleSheet.create({
   peekText: {
     marginLeft: 8,
     fontSize: 16,
-    color: Colors.subduedTextColor, // Gray-500
     fontWeight: "500",
   },
   fullContent: {
@@ -344,7 +347,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#1c1c1e", // Dark text
     marginBottom: 5,
   },
   breakdownItem: {
@@ -352,7 +354,6 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    color: Colors.subduedTextColor, // Gray-500
     textTransform: "uppercase",
   },
   interactiveSentenceContainer: {
@@ -362,38 +363,31 @@ const styles = StyleSheet.create({
   },
   pinyinValue: {
     fontSize: 18,
-    color: "#1c1c1e",
     fontWeight: "600",
     lineHeight: 30,
   },
   hanziValue: {
     fontSize: 22,
-    color: "#1c1c1e",
     lineHeight: 34,
   },
   englishValue: {
     fontSize: 18,
-    color: "#1c1c1e",
     lineHeight: 26,
   },
   breakdownText: {
     fontSize: 16,
-    color: "#1c1c1e",
     lineHeight: 24,
   },
   tooltipContainer: {
     position: "absolute",
-    backgroundColor: "#f3f4f6", // Light gray
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 12,
     alignItems: "center",
     marginBottom: 6,
     borderWidth: 1,
-    borderColor: "#e5e7eb",
   },
   tooltipText: {
-    color: "#1c1c1e",
     fontSize: 14,
     textAlign: "center",
   },
@@ -411,12 +405,10 @@ const styles = StyleSheet.create({
   },
   wordHintText: {
     fontSize: 13,
-    color: Colors.subduedTextColor,
     fontStyle: "italic",
   },
   playButton: {
     marginLeft: 12,
-    backgroundColor: "#fff",
     borderRadius: 16,
     padding: 4,
     borderWidth: 1,

@@ -16,6 +16,7 @@ import {
   Platform,
   StyleSheet,
   TouchableOpacity,
+  useColorScheme,
   View,
 } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
@@ -23,7 +24,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 
 export default function OnboardingScreen() {
-  const colors = Colors["light"];
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme === "dark" ? "dark" : "light"];
 
   const { refreshProfile } = useAuth();
   const [step, setStep] = useState(0);
@@ -102,7 +104,7 @@ export default function OnboardingScreen() {
               <Ionicons name="arrow-back" size={24} color={colors.text} />
             </TouchableOpacity>
           )}
-          <View style={styles.progressBarContainer}>
+          <View style={[styles.progressBarContainer, { backgroundColor: colors.borderColor }]}>
             <View
               style={[
                 styles.progressBar,
@@ -141,14 +143,14 @@ export default function OnboardingScreen() {
           </Animated.View>
         </View>
 
-        <View style={[styles.footer, { zIndex: 10 }]}>
+        <View style={[styles.footer, { zIndex: 10, borderTopColor: colors.borderColor }]}>
           <TouchableOpacity
             style={[
               styles.continueButton,
               {
                 backgroundColor: isNextEnabled()
                   ? Colors.primaryAccentColor
-                  : "#E5E7EB",
+                  : colors.borderColor,
               },
             ]}
             disabled={!isNextEnabled}

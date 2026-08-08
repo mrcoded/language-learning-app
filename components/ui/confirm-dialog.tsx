@@ -1,5 +1,5 @@
 import { Colors } from "@/constants/theme";
-import { Modal, Pressable, StyleSheet, View } from "react-native";
+import { Modal, Pressable, StyleSheet, useColorScheme, View } from "react-native";
 import { ThemedText } from "../themed-text";
 import { ThemedView } from "../themed-view";
 
@@ -22,6 +22,8 @@ export default function ConfirmDialog({
   onCancel: () => void;
   destructive?: boolean;
 }) {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme === "dark" ? "dark" : "light"];
   return (
     <Modal
       visible={visible}
@@ -37,7 +39,7 @@ export default function ConfirmDialog({
           </ThemedText>
           {description ? (
             <ThemedText
-              style={[styles.description, { color: Colors.subduedTextColor }]}
+              style={[styles.description, { color: colors.subduedText }]}
             >
               {description}
             </ThemedText>
@@ -45,12 +47,12 @@ export default function ConfirmDialog({
 
           <View style={styles.actions}>
             <Pressable
-              style={[styles.button, styles.cancel]}
+              style={[styles.button, styles.cancel, { backgroundColor: colors.borderColor }]}
               onPress={onCancel}
             >
               <ThemedText
                 type="defaultSemiBold"
-                style={{ color: Colors.subduedTextColor }}
+                style={{ color: colors.subduedText }}
               >
                 {cancelLabel}
               </ThemedText>
@@ -108,10 +110,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 10,
   },
-  cancel: {
-    backgroundColor: "rgba(0,0,0,0.06)",
-    color: "#FFFFFF",
-  },
+  cancel: {},
   confirm: {
     backgroundColor: Colors.primaryAccentColor,
   },

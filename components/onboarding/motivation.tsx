@@ -1,7 +1,7 @@
 import React from "react";
 import { Colors } from "@/constants/theme";
 import { MOTIVATION_OPTIONS } from "@/constants/motivation";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, useColorScheme, View } from "react-native";
 import { ThemedText } from "../themed-text";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
@@ -12,7 +12,8 @@ export default function Motivation({
   motivations: string[];
   setMotivations: (motivations: string[]) => void;
 }) {
-  const colors = Colors["light"];
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme === "dark" ? "dark" : "light"];
 
   const toggleMotivation = (id: string) => {
     if (motivations.includes(id)) {
@@ -24,10 +25,10 @@ export default function Motivation({
 
   return (
     <View style={styles.stepContainer}>
-      <ThemedText type="title" style={styles.title}>
+      <ThemedText type="title" style={[styles.title, { color: colors.text }]}>
         Why are you learning mandarin?
       </ThemedText>
-      <ThemedText type="title" style={styles.subTitle}>
+      <ThemedText style={[styles.subTitle, { color: colors.subduedText }]}>
         Select all that applies. This will help us personalize your learning
         experience.
       </ThemedText>
@@ -46,9 +47,13 @@ export default function Motivation({
               style={[
                 styles.optionCard,
                 styles.motivationCard,
-                isSelected && {
-                  borderColor: Colors.primaryAccentColor,
-                  backgroundColor: "#FFF5F0",
+                {
+                  backgroundColor: isSelected
+                    ? (colorScheme === "dark" ? "#3A2412" : "#FFF5F0")
+                    : colors.cardBackground,
+                  borderColor: isSelected
+                    ? Colors.primaryAccentColor
+                    : colors.borderColor,
                 },
               ]}
             >
@@ -65,7 +70,7 @@ export default function Motivation({
                         color: Colors.primaryAccentColor,
                       }
                     : {
-                        color: Colors.subduedTextColor,
+                        color: colors.text,
                       },
                 ]}
               >
@@ -87,7 +92,6 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "bold",
     marginBottom: 12,
-    color: Colors.light.text,
   },
   optionsTitle: {
     fontSize: 18,
@@ -96,17 +100,14 @@ const styles = StyleSheet.create({
   },
   optionsDescription: {
     fontSize: 14,
-    color: Colors.subduedTextColor,
   },
   optionCard: {
     padding: 20,
     borderRadius: 16,
     borderWidth: 2,
-    borderColor: "#E5E7EB",
   },
   subTitle: {
     fontSize: 16,
-    color: Colors.subduedTextColor,
     marginBottom: 32,
   },
   input: {

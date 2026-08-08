@@ -6,6 +6,7 @@ import {
   Platform,
   StyleSheet,
   TouchableOpacity,
+  useColorScheme,
   View,
 } from "react-native";
 import { ThemedText } from "../themed-text";
@@ -18,6 +19,8 @@ export default function SingleResponseMode({
   optionSelectAnimation: Animated.Value;
 }) {
   const [showAnswer, setShowAnswer] = useState(false);
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme === "dark" ? "dark" : "light"];
 
   return (
     <View style={{ flex: 1 }}>
@@ -44,12 +47,12 @@ export default function SingleResponseMode({
         </Animated.View>
       </View>
       <View
-        style={[styles.singleResponseContainer, { backgroundColor: "#ffffff" }]}
+        style={[styles.singleResponseContainer, { backgroundColor: colors.cardBackground }]}
       >
         <ThemedText
           style={[
             styles.singleResponseEnglish,
-            { color: Colors.subduedTextColor },
+            { color: colors.text },
           ]}
         >
           {option.english}
@@ -60,18 +63,18 @@ export default function SingleResponseMode({
           hitSlop={{ top: 10, bottom: 10, left: 20, right: 20 }}
         >
           {!showAnswer ? (
-            <ThemedText style={styles.instructionText}>
+            <ThemedText style={[styles.instructionText, { color: colors.subduedText }]}>
               Tap here to reveal how to say it
             </ThemedText>
           ) : (
             <View style={styles.singleResponseMandarin}>
-              <ThemedText style={styles.optionDetailsPinyin}>
+              <ThemedText style={[styles.optionDetailsPinyin, { color: colors.text }]}>
                 {option.mandarin.pinyin}
               </ThemedText>
               <ThemedText
                 style={[
                   styles.optionDetailsHanzi,
-                  { color: Colors.subduedTextColor },
+                  { color: colors.subduedText },
                 ]}
               >
                 {option.mandarin.hanzi}

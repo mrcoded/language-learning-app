@@ -1,7 +1,7 @@
 import React from "react";
 import { LEVELS } from "@/constants/levels";
 import { Colors } from "@/constants/theme";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, useColorScheme, View } from "react-native";
 import { ThemedText } from "../themed-text";
 
 export default function LanguageLevel({
@@ -11,9 +11,12 @@ export default function LanguageLevel({
   setLevel: (level: string) => void;
   level: string | null;
 }) {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme === "dark" ? "dark" : "light"];
+
   return (
     <View style={styles.stepContainer}>
-      <ThemedText type="title" style={styles.title}>
+      <ThemedText type="title" style={[styles.title, { color: colors.text }]}>
         How much mandarin do you know?
       </ThemedText>
 
@@ -27,9 +30,13 @@ export default function LanguageLevel({
             onPress={() => setLevel(option.id)}
             style={[
               styles.optionCard,
-              level === option.id && {
-                borderColor: Colors.primaryAccentColor,
-                backgroundColor: "#FFF5F0",
+              {
+                backgroundColor: level === option.id
+                  ? (colorScheme === "dark" ? "#3A2412" : "#FFF5F0")
+                  : colors.cardBackground,
+                borderColor: level === option.id
+                  ? Colors.primaryAccentColor
+                  : colors.borderColor,
               },
             ]}
           >
@@ -40,12 +47,12 @@ export default function LanguageLevel({
                   ? {
                       color: Colors.primaryAccentColor,
                     }
-                  : { color: Colors.subduedTextColor },
+                  : { color: colors.text },
               ]}
             >
               {option.title}
             </ThemedText>
-            <ThemedText style={styles.optionsDescription}>
+            <ThemedText style={[styles.optionsDescription, { color: colors.subduedText }]}>
               {option.description}
             </ThemedText>
           </TouchableOpacity>
@@ -63,7 +70,6 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "bold",
     marginBottom: 12,
-    color: Colors.light.text,
   },
   optionsTitle: {
     fontSize: 18,
@@ -72,12 +78,10 @@ const styles = StyleSheet.create({
   },
   optionsDescription: {
     fontSize: 14,
-    color: Colors.subduedTextColor,
   },
   optionCard: {
     padding: 20,
     borderRadius: 16,
     borderWidth: 2,
-    borderColor: "#E5E7EB",
   },
 });

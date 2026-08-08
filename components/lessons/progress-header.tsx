@@ -1,6 +1,6 @@
 import { Colors } from "@/constants/theme";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, useColorScheme, View } from "react-native";
 import { ThemedText } from "../themed-text";
 
 export default function ProgressHeader({
@@ -14,17 +14,33 @@ export default function ProgressHeader({
   totalCount: number;
   onClose: () => void;
 }) {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme === "dark" ? "dark" : "light"];
+
   return (
-    <View style={styles.header}>
+    <View
+      style={[
+        styles.header,
+        {
+          backgroundColor: colors.background,
+          borderBottomColor: colors.borderColor,
+        },
+      ]}
+    >
       <Pressable hitSlop={20} style={styles.closeButton} onPress={onClose}>
-        <Ionicons name="close" size={18} color="#9ca3af" />
+        <Ionicons name="close" size={20} color={colors.text} />
       </Pressable>
       <View style={styles.progressContainer}>
-        <View style={styles.progressBar}>
+        <View
+          style={[
+            styles.progressBar,
+            { backgroundColor: colors.borderColor },
+          ]}
+        >
           <View style={[styles.progressFill, { width: `${progress}%` }]}></View>
         </View>
         <ThemedText
-          style={[styles.progressText, { color: Colors.subduedTextColor }]}
+          style={[styles.progressText, { color: colors.subduedText }]}
         >
           {currentCount}/{totalCount}
         </ThemedText>
@@ -41,8 +57,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#e5e7eb",
-    backgroundColor: "white",
   },
   closeButton: {
     marginRight: 16,
@@ -58,7 +72,6 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     marginRight: 12,
-    backgroundColor: "#e5e7eb",
   },
   progressFill: {
     height: "100%",

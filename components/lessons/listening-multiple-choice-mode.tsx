@@ -5,6 +5,7 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  useColorScheme,
   View,
 } from "react-native";
 import { ThemedText } from "../themed-text";
@@ -22,10 +23,13 @@ export default function ListeningMultipleChoiceMode({
   isLoading: boolean;
   showResult: boolean;
 }) {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme === "dark" ? "dark" : "light"];
+
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.promptContainer}>
-        <ThemedText type="subtitle" style={styles.sectionTitle}>
+        <ThemedText type="subtitle" style={[styles.sectionTitle, { color: colors.text }]}>
           What did you just hear?
         </ThemedText>
       </View>
@@ -45,10 +49,10 @@ export default function ListeningMultipleChoiceMode({
                 styles.optionButton,
                 isSelected && styles.selectedOption,
                 {
-                  backgroundColor: "#ffffff",
+                  backgroundColor: colors.cardBackground,
                   borderColor: isSelected
                     ? Colors.primaryAccentColor
-                    : "#e5e7eb",
+                    : colors.borderColor,
                   opacity: isLoading || showResult ? 0.7 : 1,
                   marginBottom: 16,
                 },
@@ -56,7 +60,7 @@ export default function ListeningMultipleChoiceMode({
               onPress={() => handleOptionPress(option.id)}
               disabled={isLoading || showResult}
             >
-              <ThemedText style={styles.optionText}>
+              <ThemedText style={[styles.optionText, { color: colors.text }]}>
                 {option.english}
               </ThemedText>
             </Pressable>

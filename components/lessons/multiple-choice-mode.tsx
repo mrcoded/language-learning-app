@@ -7,6 +7,7 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  useColorScheme,
   View,
 } from "react-native";
 import { ThemedText } from "../themed-text";
@@ -26,6 +27,9 @@ export default function MultipleChoiceMode({
   isLoading: boolean;
   showResult: boolean;
 }) {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme === "dark" ? "dark" : "light"];
+
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.promptContainer}>
@@ -47,7 +51,7 @@ export default function MultipleChoiceMode({
         >
           <ThemedText
             type="subtitle"
-            style={[styles.sectionTitle, { color: Colors.subduedTextColor }]}
+            style={[styles.sectionTitle, { color: colors.subduedText }]}
           >
             Choose your response:
           </ThemedText>
@@ -109,10 +113,10 @@ export default function MultipleChoiceMode({
                   styles.optionButton,
                   isSelected && styles.selectedOption,
                   {
-                    backgroundColor: "#ffffff",
+                    backgroundColor: colors.cardBackground,
                     borderColor: isSelected
                       ? Colors.primaryAccentColor
-                      : "#e5e7eb",
+                      : colors.borderColor,
                     opacity: isLoading || showResult ? 0.7 : 1,
                   },
                 ]}
@@ -123,7 +127,7 @@ export default function MultipleChoiceMode({
                   <ThemedText
                     style={[
                       styles.optionText,
-                      { color: Colors.subduedTextColor },
+                      { color: colors.text },
                     ]}
                   >
                     {option.english}

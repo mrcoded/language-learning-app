@@ -62,16 +62,16 @@ export default function Flashcard({
   const FrontContent = () => {
     if (direction === "en-zh") {
       return (
-        <ThemedText style={styles.englishFront}>{word.english}</ThemedText>
+        <ThemedText style={[styles.englishFront, { color: colors.text }]}>{word.english}</ThemedText>
       );
     }
 
     return (
       <View style={styles.mandarinContent}>
-        <ThemedText style={[styles.pinyin, { color: Colors.subduedTextColor }]}>
+        <ThemedText style={[styles.pinyin, { color: colors.text }]}>
           {word.pinyin}
         </ThemedText>
-        <ThemedText style={[styles.hanzi, { color: Colors.subduedTextColor }]}>
+        <ThemedText style={[styles.hanzi, { color: colors.subduedText }]}>
           {word.hanzi}
         </ThemedText>
       </View>
@@ -107,7 +107,7 @@ export default function Flashcard({
             styles.card,
             styles.cardFront,
             frontAnimatedStyle,
-            { backgroundColor: colors.background },
+            { backgroundColor: colors.cardBackground, borderColor: colors.borderColor },
           ]}
         >
           {FrontContent()}

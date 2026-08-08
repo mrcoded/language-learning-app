@@ -63,7 +63,7 @@ export default function LessonsContent() {
           key={`start-${i}`}
           name={i <= starsToDisplay ? "star" : "star-outline"}
           size={16}
-          color={i <= starsToDisplay ? "#FFD700" : Colors.subduedTextColor}
+          color={i <= starsToDisplay ? "#FFD700" : colors.subduedText}
           style={styles.starIcon}
         />,
       );
@@ -74,7 +74,7 @@ export default function LessonsContent() {
       elements.push(
         <ThemedText
           key="extra-count"
-          style={[styles.extraCountText, { color: Colors.subduedTextColor }]}
+          style={[styles.extraCountText, { color: colors.subduedText }]}
         >
           +{extraCount}
         </ThemedText>,
@@ -98,10 +98,10 @@ export default function LessonsContent() {
           style={[
             styles.lessonBubble,
             {
-              backgroundColor: colors.background,
+              backgroundColor: colors.cardBackground,
               borderColor: isMastered
                 ? Colors.primaryAccentColor
-                : Colors.borderColor,
+                : colors.borderColor,
             },
           ]}
           onPress={() => handleLessonPress(lesson)}
@@ -131,7 +131,7 @@ export default function LessonsContent() {
         <View
           style={[
             styles.header,
-            { borderBottomColor: Colors.dark.borderColor },
+            { borderBottomColor: colors.borderColor },
           ]}
         >
           <TouchableOpacity>
@@ -141,7 +141,7 @@ export default function LessonsContent() {
             <ThemedText
               style={[
                 styles.headerSubtitle,
-                { color: Colors.subduedTextColor },
+                { color: colors.subduedText },
               ]}
             >
               In reviews
@@ -165,7 +165,7 @@ export default function LessonsContent() {
                 </ThemedText>
               </View>
               <ThemedText
-                style={[styles.statLabel, { color: Colors.subduedTextColor }]}
+                style={[styles.statLabel, { color: colors.subduedText }]}
               >
                 minutes spoken
               </ThemedText>
@@ -175,7 +175,7 @@ export default function LessonsContent() {
           <View
             style={[
               styles.headerSeparator,
-              { backgroundColor: Colors.borderColor },
+              { backgroundColor: colors.borderColor },
             ]}
           />
 
@@ -196,7 +196,7 @@ export default function LessonsContent() {
                 </ThemedText>
               </View>
               <ThemedText
-                style={[styles.statLabel, { color: Colors.subduedTextColor }]}
+                style={[styles.statLabel, { color: colors.subduedText }]}
               >
                 minutes listened
               </ThemedText>

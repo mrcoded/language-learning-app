@@ -2,7 +2,7 @@ import React from "react";
 import { Colors } from "@/constants/theme";
 import { INTEREST_OPTIONS } from "@/constants/interests";
 import { ThemedText } from "../themed-text";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { View, StyleSheet, TouchableOpacity, useColorScheme } from "react-native";
 
 export default function Interests({
   interests,
@@ -11,6 +11,9 @@ export default function Interests({
   interests: string[];
   setInterests: (interests: string[]) => void;
 }) {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme === "dark" ? "dark" : "light"];
+
   const toggleInterest = (id: string) => {
     if (interests.includes(id)) {
       setInterests(interests.filter((interest) => interest !== id));
@@ -21,10 +24,10 @@ export default function Interests({
 
   return (
     <View style={styles.stepContainer}>
-      <ThemedText type="title" style={styles.title}>
+      <ThemedText type="title" style={[styles.title, { color: colors.text }]}>
         What are your interests?{"\n"}
       </ThemedText>
-      <ThemedText type="title" style={styles.subTitle}>
+      <ThemedText style={[styles.subTitle, { color: colors.subduedText }]}>
         Select all that applies. This will help us personalize your learning
         experience.
       </ThemedText>
@@ -39,9 +42,13 @@ export default function Interests({
               onPress={() => toggleInterest(interest)}
               style={[
                 styles.tag,
-                isSelected && {
-                  borderColor: Colors.primaryAccentColor,
-                  backgroundColor: Colors.primaryAccentColor,
+                {
+                  backgroundColor: isSelected
+                    ? Colors.primaryAccentColor
+                    : colors.cardBackground,
+                  borderColor: isSelected
+                    ? Colors.primaryAccentColor
+                    : colors.borderColor,
                 },
               ]}
             >
@@ -53,7 +60,7 @@ export default function Interests({
                         color: "#FFF",
                       }
                     : {
-                        color: Colors.subduedTextColor,
+                        color: colors.text,
                       },
                 ]}
               >
@@ -75,7 +82,6 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "bold",
     marginBottom: 12,
-    color: Colors.light.text,
   },
   optionsTitle: {
     fontSize: 18,
@@ -84,17 +90,14 @@ const styles = StyleSheet.create({
   },
   optionsDescription: {
     fontSize: 14,
-    color: Colors.subduedTextColor,
   },
   optionCard: {
     padding: 20,
     borderRadius: 16,
     borderWidth: 2,
-    borderColor: "#E5E7EB",
   },
   subTitle: {
     fontSize: 16,
-    color: Colors.subduedTextColor,
     marginBottom: 32,
   },
   input: {
@@ -119,7 +122,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
   },
   tagText: {
     fontSize: 16,

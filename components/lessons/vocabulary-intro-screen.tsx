@@ -2,7 +2,7 @@ import { Colors } from "@/constants/theme";
 import { Question, Word } from "@/types/course-data";
 import { router } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, useColorScheme, View } from "react-native";
 import { ThemedText } from "../themed-text";
 import ConfirmDialog from "../ui/confirm-dialog";
 import FlashCard from "./flash-card";
@@ -92,6 +92,9 @@ export default function VocabularyIntroScreen({
   questions: Question[];
   onStartLesson: () => void;
 }) {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme === "dark" ? "dark" : "light"];
+
   const vocabulary = useMemo(() => getUniqueWords(questions), [questions]);
   const deck = useMemo(() => buildDeck(vocabulary), [vocabulary]);
   const [state, setState] = useState<StudyState>(() =>
@@ -201,12 +204,12 @@ export default function VocabularyIntroScreen({
           <ThemedText
             style={[
               styles.instructionTitle,
-              { color: Colors.subduedTextColor },
+              { color: colors.subduedText },
             ]}
           >
             Lesson Vocabulary
           </ThemedText>
-          <ThemedText style={styles.instructionText}>
+          <ThemedText style={[styles.instructionText, { color: colors.subduedText }]}>
             Tap to flip. Retry cards you still need to review.
           </ThemedText>
         </View>
@@ -229,11 +232,12 @@ export default function VocabularyIntroScreen({
               style={({ pressed }) => [
                 styles.gradeButton,
                 styles.againButton,
+                { backgroundColor: colors.cardBackground, borderColor: colors.borderColor },
                 !currentCard ? styles.disabledButton : null,
                 pressed && !!currentCard ? styles.pressedButton : null,
               ]}
             >
-              <ThemedText style={styles.gradeButtonText}>Again</ThemedText>
+              <ThemedText style={[styles.gradeButtonText, { color: colors.text }]}>Again</ThemedText>
             </Pressable>
             <Pressable
               onPress={() => handleGrade("good")}
@@ -258,7 +262,7 @@ export default function VocabularyIntroScreen({
               pressed && styles.skipButtonPressed,
             ]}
           >
-            <ThemedText style={styles.skipButtonText}>
+            <ThemedText style={[styles.skipButtonText, { color: colors.subduedText }]}>
               Skip to Lesson
             </ThemedText>
           </Pressable>

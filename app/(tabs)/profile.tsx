@@ -21,7 +21,7 @@ export default function Profile() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme === "dark" ? "dark" : "light"];
 
-  const { isPremium, premiumExpiresAt, profile, user } = useAuth();
+  const { isPremium, premiumExpired, premiumExpiresAt, profile, user } = useAuth();
   const [paywallVisible, setPaywallVisible] = useState(false);
   const { stats, loading } = useSpeakingListeningStats();
 
@@ -53,7 +53,7 @@ export default function Profile() {
       <View style={styles.container}>
         {/* Header */}
         <View
-          style={[styles.header, { borderBottomColor: Colors.borderColor }]}
+          style={[styles.header, { borderBottomColor: colors.borderColor }]}
         >
           <ThemedText style={styles.headerTitle}>Profile</ThemedText>
         </View>
@@ -67,8 +67,8 @@ export default function Profile() {
             style={[
               styles.profileCard,
               {
-                backgroundColor: colors.background,
-                borderColor: Colors.borderColor,
+                backgroundColor: colors.cardBackground,
+                borderColor: colors.borderColor,
               },
             ]}
           >
@@ -84,7 +84,7 @@ export default function Profile() {
             </View>
             <ThemedText style={styles.userName}>{profile.full_name}</ThemedText>
             <ThemedText
-              style={[styles.userEmail, { color: Colors.subduedTextColor }]}
+              style={[styles.userEmail, { color: colors.subduedText }]}
             >
               {user?.email}
             </ThemedText>
@@ -108,7 +108,7 @@ export default function Profile() {
                 </ThemedText>
               </View>
               <ThemedText
-                style={[styles.statLabel, { color: Colors.subduedTextColor }]}
+                style={[styles.statLabel, { color: colors.subduedText }]}
               >
                 minutes spoken
               </ThemedText>
@@ -117,7 +117,7 @@ export default function Profile() {
             <View
               style={[
                 styles.statSeparator,
-                { backgroundColor: Colors.borderColor },
+                { backgroundColor: colors.borderColor },
               ]}
             />
 
@@ -126,7 +126,7 @@ export default function Profile() {
                 <ThemedText style={styles.statValue}>0</ThemedText>
               </View>
               <ThemedText
-                style={[styles.statLabel, { color: Colors.subduedTextColor }]}
+                style={[styles.statLabel, { color: colors.subduedText }]}
               >
                 day streak
               </ThemedText>
@@ -138,7 +138,9 @@ export default function Profile() {
             style={[
               styles.premiumCard,
               {
-                backgroundColor: Colors.primaryAccentColor,
+                backgroundColor: premiumExpired
+                  ? "#DC2626"
+                  : Colors.primaryAccentColor,
               },
             ]}
             onPress={() => {
@@ -146,17 +148,27 @@ export default function Profile() {
             }}
           >
             <View style={styles.premiumLeft}>
-              <Ionicons name="star" size={24} color="#FFF" />
+              <Ionicons
+                name={premiumExpired ? "alert-circle" : "star"}
+                size={24}
+                color="#FFF"
+              />
               <View style={styles.premiumText}>
                 <ThemedText style={styles.premiumTitle}>
-                  {isPremium ? "Premium Active" : "Get Premium"}
+                  {isPremium
+                    ? "Premium Active"
+                    : premiumExpired
+                      ? "Premium Expired"
+                      : "Get Premium"}
                 </ThemedText>
                 <ThemedText style={styles.premiumSubtitle}>
                   {isPremium
                     ? premiumExpiresAt
                       ? `Premium ends ${new Date(premiumExpiresAt).toLocaleDateString()}`
                       : "Unlocked premium features"
-                    : "Unlock unlimited access to all lessons"}
+                    : premiumExpired
+                      ? `Expired on ${new Date(premiumExpiresAt!).toLocaleDateString()}. Tap to renew.`
+                      : "Unlock unlimited access to all lessons"}
                 </ThemedText>
               </View>
             </View>
@@ -170,13 +182,13 @@ export default function Profile() {
               style={[
                 styles.menuCard,
                 {
-                  backgroundColor: Colors.light.background,
-                  borderColor: Colors.borderColor,
+                  backgroundColor: colors.cardBackground,
+                  borderColor: colors.borderColor,
                 },
               ]}
             >
               <TouchableOpacity
-                style={styles.menuItem}
+                style={[styles.menuItem, { borderColor: colors.borderColor }]}
                 onPress={() =>
                   Alert.alert(
                     "Settings",
@@ -188,12 +200,12 @@ export default function Profile() {
                   <Ionicons
                     name="settings-outline"
                     size={24}
-                    color={Colors.subduedTextColor}
+                    color={colors.subduedText}
                   />
                   <ThemedText
                     style={[
                       styles.menuItemTitle,
-                      { color: Colors.subduedTextColor },
+                      { color: colors.text },
                     ]}
                   >
                     App Settings
@@ -202,7 +214,7 @@ export default function Profile() {
                 <Ionicons
                   name="chevron-forward"
                   size={20}
-                  color={Colors.subduedTextColor}
+                  color={colors.subduedText}
                 />
               </TouchableOpacity>
               <TouchableOpacity
@@ -218,12 +230,12 @@ export default function Profile() {
                   <Ionicons
                     name="help-circle-outline"
                     size={24}
-                    color={Colors.subduedTextColor}
+                    color={colors.subduedText}
                   />
                   <ThemedText
                     style={[
                       styles.menuItemTitle,
-                      { color: Colors.subduedTextColor },
+                      { color: colors.text },
                     ]}
                   >
                     Help & Support
@@ -232,7 +244,7 @@ export default function Profile() {
                 <Ionicons
                   name="chevron-forward"
                   size={20}
-                  color={Colors.subduedTextColor}
+                  color={colors.subduedText}
                 />
               </TouchableOpacity>
             </View>
@@ -241,7 +253,7 @@ export default function Profile() {
           {/* Sign Out Button */}
           <TouchableOpacity
             onPress={handleSignOut}
-            style={[styles.signOutButton, { borderColor: Colors.borderColor }]}
+            style={[styles.signOutButton, { borderColor: colors.borderColor, backgroundColor: colors.cardBackground }]}
           >
             <Ionicons name="log-out-outline" size={20} color="#DC2626" />
             <ThemedText style={styles.signOutText}>Sign Out</ThemedText>

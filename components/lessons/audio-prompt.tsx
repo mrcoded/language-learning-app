@@ -9,6 +9,7 @@ import {
   Pressable,
   StyleSheet,
   TouchableOpacity,
+  useColorScheme,
   View,
 } from "react-native";
 import { ThemedText } from "../themed-text";
@@ -47,6 +48,8 @@ export default function AudioPrompt({
   listeningScale: Animated.Value;
   fadeAnimation: Animated.Value;
 }) {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme === "dark" ? "dark" : "light"];
   const playbackDisabled = !selectedOption && (isPlaying || hasListenedToAudio);
 
   return (
@@ -130,7 +133,7 @@ export default function AudioPrompt({
       >
         {selectedOption ? (
           <View style={styles.recordingPromptTop}>
-            <ThemedText style={styles.recordingPromptText}>
+            <ThemedText style={[styles.recordingPromptText, { color: colors.subduedText }]}>
               {isRecognizing
                 ? "Speak your response now"
                 : "Tap the microphone to record"}
@@ -144,10 +147,10 @@ export default function AudioPrompt({
                 { opacity: instructionOpacity },
               ]}
             >
-              <ThemedText style={[styles.instructionText, { marginBottom: 8 }]}>
+              <ThemedText style={[styles.instructionText, { color: colors.subduedText, marginBottom: 8 }]}>
                 Tap play to listen carefully
               </ThemedText>
-              <ThemedText style={[styles.instructionHint]}>
+              <ThemedText style={[styles.instructionHint, { color: colors.subduedText }]}>
                 The audio plays once before each response
               </ThemedText>
             </Animated.View>
@@ -160,7 +163,7 @@ export default function AudioPrompt({
                 },
               ]}
             >
-              <ThemedText style={styles.revealButtonText}>
+              <ThemedText style={[styles.revealButtonText, { color: colors.subduedText }]}>
                 Listening...
               </ThemedText>
             </Animated.View>
@@ -170,11 +173,11 @@ export default function AudioPrompt({
             <Animated.View
               style={[styles.mandarinText, { opacity: fadeAnimation }]}
             >
-              <ThemedText style={styles.pinyin}>
+              <ThemedText style={[styles.pinyin, { color: colors.text }]}>
                 {currentQuestion.mandarin.pinyin}
               </ThemedText>
               <ThemedText
-                style={[styles.hanzi, { color: Colors.subduedTextColor }]}
+                style={[styles.hanzi, { color: colors.subduedText }]}
               >
                 {currentQuestion.mandarin.hanzi}
               </ThemedText>
@@ -187,7 +190,7 @@ export default function AudioPrompt({
               onPress={onRevealMandarin}
               hitSlop={{ top: 10, bottom: 10, left: 20, right: 20 }}
             >
-              <ThemedText style={styles.instructionText}>
+              <ThemedText style={[styles.instructionText, { color: colors.subduedText }]}>
                 Tap here to reveal what was said
               </ThemedText>
             </TouchableOpacity>
@@ -236,7 +239,6 @@ const styles = StyleSheet.create({
   },
   revealButtonText: {
     fontSize: 16,
-    color: Colors.subduedTextColor,
     marginBottom: 4,
   },
   recordingStatus: {
@@ -266,7 +268,6 @@ const styles = StyleSheet.create({
   },
   recordingPromptText: {
     fontSize: 16,
-    color: Colors.subduedTextColor,
     textAlign: "center",
   },
   listeningPrompt: {
@@ -286,11 +287,9 @@ const styles = StyleSheet.create({
   instructionText: {
     fontSize: 16,
     textAlign: "center",
-    color: Colors.subduedTextColor,
   },
   instructionHint: {
     fontSize: 14,
     textAlign: "center",
-    color: "#9ca3af",
   },
 });

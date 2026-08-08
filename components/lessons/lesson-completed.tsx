@@ -4,6 +4,7 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  useColorScheme,
   View,
 } from "react-native";
 
@@ -23,6 +24,8 @@ export default function LessonCompleted({
   onContinue: () => void;
   onReview: () => void;
 }) {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme === "dark" ? "dark" : "light"];
   const confettiRef = useRef<ConfettiMethods>(null);
 
   const fadeAnimation = useRef(new Animated.Value(0)).current;
@@ -66,7 +69,10 @@ export default function LessonCompleted({
     <View style={styles.container}>
       <LinearGradient
         style={styles.gradient}
-        colors={["#ffffff", "#f9fafb", "#f3f4f6"]}
+        colors={colorScheme === "dark"
+          ? ["#0D0D0D", "#141414", "#1C1C1E"]
+          : ["#ffffff", "#f9fafb", "#f3f4f6"]
+        }
       />
 
       <ScrollView
@@ -103,8 +109,8 @@ export default function LessonCompleted({
             styles.accuracyCard,
             {
               opacity: fadeAnimation,
-              backgroundColor: "#ffffff",
-              borderColor: "#e5e7eb",
+              backgroundColor: colors.cardBackground,
+              borderColor: colors.borderColor,
             },
           ]}
         >
@@ -125,7 +131,7 @@ export default function LessonCompleted({
               {lessonStats.accuracy}%
             </ThemedText>
             <ThemedText
-              style={[styles.accuracyLabel, { color: Colors.subduedTextColor }]}
+              style={[styles.accuracyLabel, { color: colors.subduedText }]}
             >
               {lessonStats.correctAnswer}/{lessonStats.totalQuestions} correct
             </ThemedText>

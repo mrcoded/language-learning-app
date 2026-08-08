@@ -29,7 +29,7 @@ export default function Conversations() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme === "dark" ? "dark" : "light"];
 
-  const { isPremium } = useAuth();
+  const { isPremium, premiumExpired } = useAuth();
   const [paywallVisible, setPaywallVisible] = useState(false);
   const [isCreatingCustom, setIsCreatingCustom] = useState(false);
   const [isGeneratingScenario, setIsGeneratingScenario] = useState(false);
@@ -160,7 +160,7 @@ export default function Conversations() {
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={{ flex: 1 }}>
         <View
-          style={[styles.header, { borderBottomColor: Colors.borderColor }]}
+          style={[styles.header, { borderBottomColor: colors.borderColor }]}
         >
           <ThemedText style={styles.headerTitle}>Topics</ThemedText>
         </View>
@@ -173,32 +173,33 @@ export default function Conversations() {
             <TouchableOpacity
               style={[
                 styles.premiumBanner,
-                { backgroundColor: Colors.primaryAccentColor },
+                { backgroundColor: premiumExpired ? "#DC2626" : Colors.primaryAccentColor },
               ]}
               onPress={() => setPaywallVisible(true)}
             >
               <View style={styles.premiumContent}>
                 <Ionicons
-                  name="chatbox"
+                  name={premiumExpired ? "time-outline" : "chatbox"}
                   size={24}
                   color="#fff"
                   style={{ marginBottom: 8 }}
                 />
                 <ThemedText style={styles.premiumTitle}>
-                  Get full access to Convo
+                  {premiumExpired ? "Your Premium Trial Expired" : "Get full access to Convo"}
                 </ThemedText>
                 <ThemedText style={styles.premiumSubtitle}>
-                  Unlock Convo Premium to get access to custom scenarios and
-                  more
+                  {premiumExpired
+                    ? "Renew your premium subscription to keep accessing custom scenarios and advanced practice."
+                    : "Unlock Convo Premium to get access to custom scenarios and more"}
                 </ThemedText>
                 <View style={styles.premiumButton}>
                   <ThemedText
                     style={[
                       styles.premiumButtonText,
-                      { color: Colors.primaryAccentColor },
+                      { color: premiumExpired ? "#DC2626" : Colors.primaryAccentColor },
                     ]}
                   >
-                    Start free trial
+                    {premiumExpired ? "Renew Premium" : "Try Free for 7 Days"}
                   </ThemedText>
                 </View>
               </View>
@@ -206,7 +207,7 @@ export default function Conversations() {
           )}
 
           <TouchableOpacity
-            style={[styles.freeTalkCard, { borderColor: Colors.borderColor }]}
+            style={[styles.freeTalkCard, { borderColor: colors.borderColor, backgroundColor: colors.cardBackground }]}
             onPress={handleCreateCustom}
           >
             <View style={styles.freeTalkContent}>
@@ -214,13 +215,13 @@ export default function Conversations() {
                 Free Talk
               </ThemedText>
               <ThemedText
-                style={{ color: Colors.subduedTextColor, marginTop: 4 }}
+                style={{ color: colors.subduedText, marginTop: 4 }}
               >
                 Describe a scenario of your choice to create you custom Roleplay
                 experience.
               </ThemedText>
             </View>
-            <View style={styles.crystalBallContainer}>
+            <View style={[styles.crystalBallContainer, { backgroundColor: colorScheme === "dark" ? "#3B215E" : "#F3E8FF" }]}>
               <Ionicons name="color-wand" size={32} color="#A855F7" />
             </View>
           </TouchableOpacity>
@@ -232,7 +233,7 @@ export default function Conversations() {
                 key={scenario.id}
                 style={[
                   styles.scenarioCard,
-                  { borderColor: Colors.borderColor },
+                  { borderColor: colors.borderColor, backgroundColor: colors.cardBackground },
                 ]}
                 onPress={() => handleScenarioPress(scenario)}
               >
@@ -240,13 +241,13 @@ export default function Conversations() {
                   <View
                     style={[
                       styles.freeBadge,
-                      { backgroundColor: Colors.light.text + "22" },
+                      { backgroundColor: colors.inputBackground },
                     ]}
                   >
                     <ThemedText
                       style={[
                         styles.freeBadgeText,
-                        { color: Colors.subduedTextColor },
+                        { color: colors.subduedText },
                       ]}
                     >
                       CUSTOM
@@ -268,7 +269,7 @@ export default function Conversations() {
                     <Ionicons
                       name="lock-closed"
                       size={24}
-                      color={Colors.subduedTextColor}
+                      color={colors.subduedText}
                     />
                   </View>
                 )}
@@ -282,7 +283,7 @@ export default function Conversations() {
                     color={
                       scenario.isFree || isPremium
                         ? Colors.primaryAccentColor
-                        : Colors.subduedTextColor
+                        : colors.subduedText
                     }
                   />
                 </View>
@@ -302,7 +303,7 @@ export default function Conversations() {
           setIsPhrasebookOpen(false);
         }}
       >
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, backgroundColor: colors.modalBackground }}>
           <SafeAreaView style={{ flex: 1 }}>
             <View style={styles.modalHeader}>
               <TouchableOpacity
@@ -319,7 +320,7 @@ export default function Conversations() {
                 <Ionicons
                   name="chevron-back"
                   size={24}
-                  color={Colors.light.text}
+                  color={colors.text}
                 />
               </TouchableOpacity>
               <ThemedText type="defaultSemiBold">
@@ -338,15 +339,16 @@ export default function Conversations() {
                     style={[
                       styles.phraseRow,
                       {
-                        borderColor: Colors.borderColor,
+                        borderColor: colors.borderColor,
+                        backgroundColor: colors.cardBackground,
                       },
                     ]}
                   >
                     <ThemedText style={styles.phraseZh}>{p.hanzi}</ThemedText>
-                    <ThemedText style={{ color: Colors.subduedTextColor }}>
+                    <ThemedText style={{ color: colors.subduedText }}>
                       {p.pinyin}
                     </ThemedText>
-                    <ThemedText style={{ color: Colors.subduedTextColor }}>
+                    <ThemedText style={{ color: colors.subduedText }}>
                       {p.english}
                     </ThemedText>
                   </View>
@@ -372,12 +374,12 @@ export default function Conversations() {
                     >
                       Scenario
                     </ThemedText>
-                    <ThemedText style={{ color: Colors.subduedTextColor }}>
+                    <ThemedText style={{ color: colors.subduedText }}>
                       {selectedScenario?.description}
                     </ThemedText>
                   </View>
 
-                  <View style={styles.guidelinesCard}>
+                  <View style={[styles.guidelinesCard, { backgroundColor: colorScheme === "dark" ? "#2B220A" : "#FFFBEB" }]}>
                     <ThemedText
                       type="defaultSemiBold"
                       style={{ marginBottom: 8 }}
@@ -390,7 +392,7 @@ export default function Conversations() {
                         size={16}
                         color="#F59E0B"
                       />
-                      <ThemedText style={styles.guidelineText}>
+                      <ThemedText style={[styles.guidelineText, { color: colorScheme === "dark" ? "#FCD34D" : "#92400E" }]}>
                         No inappropriate conversations
                       </ThemedText>
                     </View>
@@ -400,7 +402,7 @@ export default function Conversations() {
                         size={16}
                         color="#F59E0B"
                       />
-                      <ThemedText style={styles.guidelineText}>
+                      <ThemedText style={[styles.guidelineText, { color: colorScheme === "dark" ? "#FCD34D" : "#92400E" }]}>
                         Not intended for advice
                       </ThemedText>
                     </View>
@@ -410,7 +412,7 @@ export default function Conversations() {
                         size={16}
                         color="#F59E0B"
                       />
-                      <ThemedText style={styles.guidelineText}>
+                      <ThemedText style={[styles.guidelineText, { color: colorScheme === "dark" ? "#FCD34D" : "#92400E" }]}>
                         Don&#39;t share sensitive information
                       </ThemedText>
                     </View>
@@ -426,7 +428,7 @@ export default function Conversations() {
                     <View
                       style={[
                         styles.goalCard,
-                        { borderColor: Colors.borderColor },
+                        { borderColor: colors.borderColor, backgroundColor: colors.cardBackground },
                       ]}
                     >
                       <ThemedText type="defaultSemiBold">
@@ -448,13 +450,14 @@ export default function Conversations() {
                         style={[
                           styles.taskCard,
                           {
-                            borderColor: Colors.borderColor,
+                            borderColor: colors.borderColor,
+                            backgroundColor: colors.cardBackground,
                           },
                         ]}
                       >
                         <Ionicons
                           size={20}
-                          color={Colors.subduedTextColor}
+                          color={colors.subduedText}
                           name="checkmark-circle-outline"
                         />
                         <ThemedText>{task}</ThemedText>
@@ -465,7 +468,7 @@ export default function Conversations() {
                   <TouchableOpacity
                     style={[
                       styles.phrasebookButton,
-                      { backgroundColor: Colors.light.text + "10" },
+                      { backgroundColor: colors.inputBackground },
                     ]}
                     onPress={() => {
                       const entries = selectedScenario?.phrasebook ?? [];
@@ -499,7 +502,7 @@ export default function Conversations() {
 
             {!isPhrasebookOpen && (
               <View
-                style={[styles.footer, { borderTopColor: Colors.borderColor }]}
+                style={[styles.footer, { borderTopColor: colors.borderColor }]}
               >
                 <TouchableOpacity
                   style={[
@@ -526,7 +529,7 @@ export default function Conversations() {
           setIsCreatingCustom(false);
         }}
       >
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, backgroundColor: colors.modalBackground }}>
           <SafeAreaView style={{ flex: 1 }}>
             <KeyboardAvoidingView
               behavior="padding"
@@ -550,7 +553,7 @@ export default function Conversations() {
                   <Ionicons
                     name="chevron-back"
                     size={24}
-                    color={Colors.light.text}
+                    color={colors.text}
                   />
                 </TouchableOpacity>
                 <ThemedText type="defaultSemiBold">Create</ThemedText>
@@ -562,7 +565,7 @@ export default function Conversations() {
                 keyboardShouldPersistTaps="handled"
               >
                 <ThemedText
-                  style={{ color: Colors.subduedTextColor, marginBottom: 20 }}
+                  style={{ color: colors.subduedText, marginBottom: 20 }}
                 >
                   Fill out each role and describe in detail the scene and the
                   conversation you want to have.
@@ -572,18 +575,18 @@ export default function Conversations() {
                   <View
                     style={[
                       styles.inputContainer,
-                      { borderColor: Colors.borderColor },
+                      { borderColor: colors.borderColor, backgroundColor: colors.inputBackground },
                     ]}
                   >
                     <Ionicons
                       name="person-outline"
                       size={20}
-                      color={Colors.subduedTextColor}
+                      color={colors.subduedText}
                     />
                     <TextInput
-                      style={[styles.input, { color: Colors.light.text }]}
+                      style={[styles.input, { color: colors.text }]}
                       placeholder="My role"
-                      placeholderTextColor={Colors.subduedTextColor}
+                      placeholderTextColor={colors.subduedText}
                       value={customMyRole}
                       onChangeText={setCustomMyRole}
                     />
@@ -591,18 +594,18 @@ export default function Conversations() {
                   <View
                     style={[
                       styles.inputContainer,
-                      { borderColor: Colors.borderColor },
+                      { borderColor: colors.borderColor, backgroundColor: colors.inputBackground },
                     ]}
                   >
                     <Ionicons
                       name="happy-outline"
                       size={20}
-                      color={Colors.subduedTextColor}
+                      color={colors.subduedText}
                     />
                     <TextInput
-                      style={[styles.input, { color: Colors.light.text }]}
+                      style={[styles.input, { color: colors.text }]}
                       placeholder="AI's role"
-                      placeholderTextColor={Colors.subduedTextColor}
+                      placeholderTextColor={colors.subduedText}
                       value={customAiRole}
                       onChangeText={setCustomAiRole}
                     />
@@ -612,7 +615,8 @@ export default function Conversations() {
                     style={[
                       styles.inputContainer,
                       {
-                        borderColor: Colors.borderColor,
+                        borderColor: colors.borderColor,
+                        backgroundColor: colors.inputBackground,
                         height: 120,
                         alignItems: "flex-start",
                         paddingTop: 16,
@@ -622,20 +626,20 @@ export default function Conversations() {
                     <Ionicons
                       name="image-outline"
                       size={20}
-                      color={Colors.subduedTextColor}
+                      color={colors.subduedText}
                       style={{ marginTop: 5 }}
                     />
                     <TextInput
                       style={[
                         styles.input,
                         {
-                          color: Colors.light.text,
+                          color: colors.text,
                           height: "100%",
                           textAlignVertical: "top",
                         },
                       ]}
                       placeholder="Set the scene and the chat topic here"
-                      placeholderTextColor={Colors.subduedTextColor}
+                      placeholderTextColor={colors.subduedText}
                       value={customScene}
                       multiline
                       onChangeText={setCustomScene}
@@ -645,7 +649,7 @@ export default function Conversations() {
               </ScrollView>
 
               <View
-                style={[styles.footer, { borderTopColor: Colors.borderColor }]}
+                style={[styles.footer, { borderTopColor: colors.borderColor }]}
               >
                 <TouchableOpacity
                   style={[
