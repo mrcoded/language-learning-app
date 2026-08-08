@@ -1,6 +1,11 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
+type ProfileProps = {
+  is_premium: boolean | null;
+  premium_expired_at: string | null;
+};
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -38,6 +43,33 @@ Deno.serve(async (req) => {
     if (userError || !user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Premium gate — transcription is used only within premium conversation mode
+    const { data: profile, error: profileError } = await userClient
+      .from("profiles")
+      .select("is_premium,premium_expired_at")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (profileError) {
+      return new Response(JSON.stringify({ error: "Profile error" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const typedProfile = (profile as ProfileProps) || null;
+    const premiumExpiredAt = typedProfile?.premium_expired_at ?? null;
+    const isPremium =
+      !!typedProfile?.is_premium &&
+      (!premiumExpiredAt || new Date(premiumExpiredAt) > new Date());
+
+    if (!isPremium) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }

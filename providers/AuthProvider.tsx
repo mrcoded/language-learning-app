@@ -8,10 +8,22 @@ export default function AuthProvider({ children }: PropsWithChildren) {
   const [profile, setProfile] = useState<any | null>(null);
   const [session, setSession] = useState<Session | null>(null);
 
-  const premiumExpireAt: string | null = profile?.premium_expired_at;
-  const isPremium =
-    !!profile?.is_premium &&
-    (!premiumExpireAt || new Date(premiumExpireAt) > new Date());
+  const premiumExpireAt: string | null = profile?.premium_expired_at ?? null;
+  const hasExpiry = !!premiumExpireAt;
+  const isExpired = hasExpiry && new Date(premiumExpireAt!) <= new Date();
+
+  // True only when DB says premium AND expiry hasn't passed
+  const isPremium = !!profile?.is_premium && !isExpired;
+
+  // True when they were premium but the trial/subscription has lapsed
+  const premiumExpired = !!profile?.is_premium && isExpired;
+
+  const revokeExpiredPremium = async (userId: string) => {
+    await supabase
+      .from("profiles")
+      .update({ is_premium: false })
+      .eq("id", userId);
+  };
 
   const getProfile = async (session: Session | null) => {
     if (!session) {
@@ -25,7 +37,19 @@ export default function AuthProvider({ children }: PropsWithChildren) {
       .eq("id", session.user.id)
       .maybeSingle();
 
-    setProfile(error ? null : data);
+    const loadedProfile = error ? null : data;
+    setProfile(loadedProfile);
+
+    // Auto-revoke in DB if premium is set but has expired
+    if (
+      loadedProfile?.is_premium &&
+      loadedProfile?.premium_expired_at &&
+      new Date(loadedProfile.premium_expired_at) <= new Date()
+    ) {
+      await revokeExpiredPremium(session.user.id);
+      // Update local state immediately so UI reacts without another fetch
+      setProfile((prev: any) => prev ? { ...prev, is_premium: false } : prev);
+    }
   };
 
   const refreshProfile = () => getProfile(session);
@@ -34,7 +58,6 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     const init = async () => {
       setLoading(true);
       const { data } = await supabase.auth.getSession();
-      // console.log(data);
       const initialSession = data.session ?? null;
       setSession(initialSession);
       await getProfile(initialSession);
@@ -63,7 +86,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         loading,
         isAdmin: false,
         isPremium,
-        language_choice: profile?.language_choice ?? null,
+        premiumExpired,
         premiumExpiresAt: premiumExpireAt,
         refreshProfile,
       }}

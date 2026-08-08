@@ -8,6 +8,7 @@ type AuthContextType = {
   loading: boolean;
   isAdmin: boolean;
   isPremium: boolean;
+  premiumExpired: boolean;
   premiumExpiresAt: string | null;
   refreshProfile: () => Promise<void>;
 };
@@ -19,6 +20,7 @@ export const AuthContext = createContext<AuthContextType>({
   loading: true,
   isAdmin: false,
   isPremium: false,
+  premiumExpired: false,
   premiumExpiresAt: null,
   refreshProfile: async () => {},
 } as AuthContextType);

@@ -1,6 +1,11 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
+type ProfileProps = {
+  is_premium: boolean | null;
+  premium_expired_at: string | null;
+};
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -50,6 +55,32 @@ Deno.serve(async (req) => {
         JSON.stringify({ error: "Unauthorized", details: userError?.message }),
         {
           status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    // Check if user already has an active (non-expired) premium — block re-trial
+    const { data: existingProfile } = await userClient
+      .from("profiles")
+      .select("is_premium,premium_expired_at")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    const typedExisting = (existingProfile as ProfileProps) || null;
+    const existingExpiry = typedExisting?.premium_expired_at ?? null;
+    const alreadyActive =
+      !!typedExisting?.is_premium &&
+      (!existingExpiry || new Date(existingExpiry) > new Date());
+
+    if (alreadyActive) {
+      return new Response(
+        JSON.stringify({
+          error: "Trial already active",
+          premium_expires_at: existingExpiry,
+        }),
+        {
+          status: 409,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         },
       );
