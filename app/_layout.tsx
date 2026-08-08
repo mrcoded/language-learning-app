@@ -3,12 +3,12 @@ import { useAuth } from "@/context/AuthContext";
 import AuthProvider from "@/providers/AuthProvider";
 
 import { useDeepLinking } from "@/hooks/useDeepLinking";
-import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
+import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { router, Stack, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { ActivityIndicator, StyleSheet, useColorScheme, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import { Toaster } from "sonner-native";
@@ -19,6 +19,7 @@ export const unstable_settings = {
 
 function RootLayoutNav() {
   const segments = useSegments();
+  const colorScheme = useColorScheme();
 
   const { session, loading, profile } = useAuth();
   const [loaded] = useFonts({
@@ -29,15 +30,27 @@ function RootLayoutNav() {
   useDeepLinking();
 
   useEffect(() => {
-    if (!loading && session) {
+    if (loading) return;
+
+    if (session) {
       if (!profile || !profile.onboarding_completed) {
+        // Authenticated but onboarding not done — send to onboarding
         const isOnboarding = segments[0] === "onboarding";
         if (!isOnboarding) {
           router.replace("/onboarding");
         }
+      } else {
+        // Fully authenticated & onboarded — block access to auth/onboarding
+        const isInAuthFlow =
+          segments[0] === "onboarding" || segments[0] === "auth";
+        if (isInAuthFlow) {
+          router.replace("/(tabs)/lessons");
+        }
       }
     }
   }, [session, loading, profile, segments]);
+
+  const navTheme = colorScheme === "dark" ? DarkTheme : DefaultTheme;
 
   if (!loaded || loading) {
     return (
@@ -49,7 +62,7 @@ function RootLayoutNav() {
 
   if (!session) {
     return (
-      <ThemeProvider value={DefaultTheme}>
+      <ThemeProvider value={navTheme}>
         <GestureHandlerRootView style={styles.container}>
           <IntroScreen />
           <Toaster />
@@ -59,17 +72,18 @@ function RootLayoutNav() {
   }
 
   return (
-    <ThemeProvider value={DefaultTheme}>
+    <ThemeProvider value={navTheme}>
       <GestureHandlerRootView style={styles.container}>
-        <Stack
-          screenOptions={{ headerShown: false }}
-          initialRouteName="onboarding"
-        >
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" />
           <Stack.Screen name="onboarding" />
+          <Stack.Screen name="conversation" />
+          <Stack.Screen name="practice" />
+          <Stack.Screen name="modal" options={{ presentation: "modal" }} />
         </Stack>
         <Toaster />
       </GestureHandlerRootView>
-      <StatusBar style="auto" />
+      <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
     </ThemeProvider>
   );
 }
