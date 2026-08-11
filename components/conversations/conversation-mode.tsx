@@ -1,6 +1,6 @@
 import { recordConversationTime } from "@/lib/speaking-listening-stats";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Audio, InterruptionModeIOS } from "expo-av";
+import { useAudioRecorder, RecordingPresets, AudioModule } from "expo-audio";
 import * as FileSystem from "expo-file-system/legacy";
 import * as Speech from "expo-speech";
 import { useEffect, useRef, useState } from "react";
@@ -13,6 +13,7 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  useColorScheme,
   View,
 } from "react-native";
 
@@ -24,6 +25,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 import { ThemedText } from "../themed-text";
+import ConfirmDialog from "../ui/confirm-dialog";
 
 interface Message {
   id: string;
@@ -41,6 +43,9 @@ export default function ConversationMode({
   scenario: ConversationScenario;
   onExit: () => void;
 }) {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme === "dark" ? "dark" : "light"];
+
   const insets = useSafeAreaInsets();
   const [showPinyin, setShowPinyin] = useState(false);
   const [isBlurred, setIsBlurred] = useState(false);
@@ -48,8 +53,9 @@ export default function ConversationMode({
   const [isRecording, setIsRecording] = useState(false);
   const [inputText, setInputText] = useState("");
   const [conversationComplete, setConversationComplete] = useState(false);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
-  const recordingRef = useRef<Audio.Recording | null>(null);
+  const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const lastSpokenAssistantMessageId = useRef<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -68,9 +74,13 @@ export default function ConversationMode({
 
   useEffect(() => {
     return () => {
-      Speech.stop();
-      if (recordingRef.current) {
-        recordingRef.current.stopAndUnloadAsync();
+      try {
+        Speech.stop();
+        if (audioRecorder.isRecording) {
+          audioRecorder.stop();
+        }
+      } catch (e) {
+        // Native shared object may already be destroyed on unmount
       }
     };
   }, []);
@@ -183,43 +193,26 @@ export default function ConversationMode({
       try {
         Speech.stop();
 
-        const perm = await Audio.requestPermissionsAsync();
-        if (!perm.granted) {
+        const status = await AudioModule.requestRecordingPermissionsAsync();
+        if (!status.granted) {
           toast.error("Microphone Permission", {
             description: "Microphone access is required to practise speaking.",
           });
           return;
         }
 
-        await Audio.setAudioModeAsync({
-          allowsRecordingIOS: true,
-          playsInSilentModeIOS: true,
-          interruptionModeIOS: InterruptionModeIOS.DoNotMix,
-          staysActiveInBackground: true,
+        await AudioModule.setAudioModeAsync({
+          allowsRecording: true,
+          playsInSilentMode: true,
+          interruptionMode: 'doNotMix',
+          shouldPlayInBackground: true,
         });
 
-        const preset = Audio.RecordingOptionsPresets.HIGH_QUALITY;
-        const { recording } = await Audio.Recording.createAsync({
-          ...preset,
-          ios: {
-            ...preset.ios,
-            extension: ".wav",
-            audioQuality: Audio.IOSAudioQuality.MAX,
-            outputFormat: Audio.IOSOutputFormat.LINEARPCM,
-          },
-          android: {
-            ...preset.android,
-            extension: ".wav",
-            outputFormat: Audio.AndroidOutputFormat.DEFAULT,
-            audioEncoder: Audio.AndroidAudioEncoder.DEFAULT,
-          },
-        });
-
-        recordingRef.current = recording;
+        await audioRecorder.prepareToRecordAsync();
+        audioRecorder.record();
         setIsRecording(true);
       } catch (err) {
         console.error("Failed to start recording:", err);
-        recordingRef.current = null;
         setIsRecording(false);
         toast.error("Recording Error", {
           description: "Could not start recording.",
@@ -230,16 +223,10 @@ export default function ConversationMode({
 
     // Stop + send audio
     try {
-      const recording = recordingRef.current;
-      if (!recording) {
-        setIsRecording(false);
-        return;
-      }
       setIsRecording(false);
 
-      await recording.stopAndUnloadAsync();
-      const uri = recording.getURI();
-      recordingRef.current = null;
+      await audioRecorder.stop();
+      const uri = audioRecorder.uri;
 
       if (!uri) {
         setIsLoading(false);
@@ -325,8 +312,21 @@ export default function ConversationMode({
 
   return (
     <>
+      <ConfirmDialog
+        visible={showExitConfirm}
+        title="Exit Conversation?"
+        description="Are you sure you want to leave this conversation? Your progress will be lost."
+        cancelLabel="Cancel"
+        confirmLabel="Exit"
+        destructive
+        onCancel={() => setShowExitConfirm(false)}
+        onConfirm={() => {
+          setShowExitConfirm(false);
+          onExit();
+        }}
+      />
       <KeyboardAvoidingView
-        style={{ flex: 1, backgroundColor: Colors.light.background }}
+        style={{ flex: 1, backgroundColor: colors.background }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         {/* Header */}
@@ -335,17 +335,17 @@ export default function ConversationMode({
             styles.header,
             {
               paddingTop: insets.top,
-              borderBottomColor: Colors.light.icon + "20",
+              borderBottomColor: colors.borderColor,
             },
           ]}
         >
-          <TouchableOpacity onPress={onExit} style={styles.backButton}>
-            <Ionicons name="close" size={24} color={Colors.light.text} />
+          <TouchableOpacity onPress={() => setShowExitConfirm(true)} style={styles.backButton}>
+            <Ionicons name="close" size={24} color={colors.text} />
           </TouchableOpacity>
           <View style={styles.headerContent}>
             <ThemedText type="defaultSemiBold">{scenario.title}</ThemedText>
             <ThemedText
-              style={{ fontSize: 12, color: Colors.subduedTextColor }}
+              style={{ fontSize: 12, color: colors.subduedText }}
             >
               Goal: {scenario.goal}
             </ThemedText>
@@ -365,7 +365,7 @@ export default function ConversationMode({
             <TouchableOpacity onPress={() => setIsBlurred(!isBlurred)}>
               <Ionicons
                 size={24}
-                color={Colors.light.text}
+                color={colors.text}
                 name={isBlurred ? "eye-off" : "eye"}
               />
             </TouchableOpacity>
@@ -400,7 +400,9 @@ export default function ConversationMode({
                       }
                     : {
                         alignSelf: "flex-start",
-                        backgroundColor: Colors.light.text + "10",
+                        backgroundColor: colors.cardBackground,
+                        borderColor: colors.borderColor,
+                        borderWidth: 1,
                       },
                 ]}
               >
@@ -410,10 +412,10 @@ export default function ConversationMode({
                       ? "white"
                       : isBlurred && !isUser
                         ? "transparent"
-                        : Colors.light.text,
+                        : colors.text,
                     backgroundColor:
                       isBlurred && !isUser
-                        ? Colors.light.text + "20"
+                        ? colors.borderColor
                         : undefined,
                     borderRadius: 4,
                   }}
@@ -428,7 +430,7 @@ export default function ConversationMode({
                     <Ionicons
                       name="volume-high"
                       size={16}
-                      color={Colors.light.text}
+                      color={colors.subduedText}
                     />
                   </TouchableOpacity>
                 )}
@@ -441,14 +443,16 @@ export default function ConversationMode({
                 styles.messageBubble,
                 {
                   alignSelf: "flex-start",
-                  backgroundColor: Colors.light.text + "10",
+                  backgroundColor: colors.cardBackground,
+                  borderColor: colors.borderColor,
+                  borderWidth: 1,
                   minWidth: 60,
                   alignItems: "center",
                   justifyContent: "center",
                 },
               ]}
             >
-              <ActivityIndicator color={Colors.light.text} size="small" />
+              <ActivityIndicator color={colors.text} size="small" />
             </View>
           )}
         </ScrollView>
@@ -459,7 +463,7 @@ export default function ConversationMode({
             styles.inputContainer,
             {
               paddingBottom: insets.bottom + 10,
-              borderTopColor: Colors.light.icon + "20",
+              borderTopColor: colors.borderColor,
             },
           ]}
         >
@@ -479,13 +483,17 @@ export default function ConversationMode({
           <View
             style={[
               styles.textInputWrapper,
-              { backgroundColor: Colors.light.text + "10" },
+              {
+                backgroundColor: colors.inputBackground,
+                borderColor: colors.borderColor,
+                borderWidth: 1,
+              },
             ]}
           >
             <TextInput
-              style={[styles.textInput, { color: Colors.light.text }]}
+              style={[styles.textInput, { color: colors.text }]}
               placeholder="Type a message..."
-              placeholderTextColor="#9ca3af"
+              placeholderTextColor={colors.subduedText}
               value={inputText}
               onChangeText={setInputText}
               multiline
@@ -516,7 +524,9 @@ export default function ConversationMode({
             style={[
               styles.completeModal,
               {
-                backgroundColor: "#ffffff",
+                backgroundColor: colors.cardBackground,
+                borderColor: colors.borderColor,
+                borderWidth: 1,
                 transform: [{ scale: scaleAnimation }],
                 opacity: fadeAnimation,
               },
@@ -532,7 +542,7 @@ export default function ConversationMode({
             <ThemedText style={styles.completeTitle}>
               Conversation Complete!
             </ThemedText>
-            <ThemedText style={styles.completeSubtitle}>
+            <ThemedText style={[styles.completeSubtitle, { color: colors.subduedText }]}>
               Great job! You successfully completed the conversation.
             </ThemedText>
             <TouchableOpacity
