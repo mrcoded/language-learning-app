@@ -7,11 +7,9 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import Animated from "react-native-reanimated";
 
 export default function LoginView({
-  setCurrentView,
   animateToEmailView,
   menuContentAnimatedStyle,
 }: {
-  setCurrentView: (view: "login" | "email") => void;
   animateToEmailView: (view: "login" | "email") => void;
   menuContentAnimatedStyle: {
     opacity: number;
