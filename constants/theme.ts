@@ -3,51 +3,75 @@
  * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
  */
 
-import { Platform } from 'react-native';
+import { Platform } from "react-native";
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+const tintColorLight = "#0a7ea4";
+const tintColorDark = "#fff";
 
 export const Colors = {
+  primaryAccentColor: "#f49000",
+  subduedTextColor: "#607280",
+  borderColor: "#0000001a",
   light: {
-    text: '#11181C',
-    background: '#fff',
+    text: "#11181C",
+    subduedText: "#607280",
+    background: "#ffffff",
+    cardBackground: "#ffffff",
+    cardSecondaryBackground: "#f9fafb",
+    borderColor: "#E5E7EB",
     tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
+    icon: "#687076",
+    tabIconDefault: "#687076",
     tabIconSelected: tintColorLight,
+    modalBackground: "#ffffff",
+    inputBackground: "#f3f4f6",
+    feedbackSuccessBg: "#e8f5e9",
+    feedbackSuccessBorder: "#34C759",
+    feedbackErrorBg: "#ffebee",
+    feedbackErrorBorder: "#ef4444",
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
+    text: "#ECEDEE",
+    subduedText: "#9BA1A6",
+    background: "#151718",
+    cardBackground: "#202425",
+    cardSecondaryBackground: "#2A2D2F",
+    borderColor: "#323739",
     tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
+    icon: "#9BA1A6",
+    tabIconDefault: "#9BA1A6",
     tabIconSelected: tintColorDark,
+    modalBackground: "#1C1E1F",
+    inputBackground: "#2A2D2F",
+    feedbackSuccessBg: "#122e19",
+    feedbackSuccessBorder: "#34C759",
+    feedbackErrorBg: "#3b1318",
+    feedbackErrorBorder: "#ef4444",
   },
 };
 
 export const Fonts = Platform.select({
   ios: {
     /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
+    sans: "system-ui",
     /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
+    serif: "ui-serif",
     /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
+    rounded: "ui-rounded",
     /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
+    mono: "ui-monospace",
   },
   default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
+    sans: "normal",
+    serif: "serif",
+    rounded: "normal",
+    mono: "monospace",
   },
   web: {
     sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
     serif: "Georgia, 'Times New Roman', serif",
-    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
+    rounded:
+      "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
     mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
   },
 });
