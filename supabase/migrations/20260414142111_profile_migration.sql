@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS public.profiles CASCADE;
+
 CREATE TABLE if not exists public.profiles(
   id uuid REFERENCES auth.users PRIMARY KEY,
   full_name TEXT,
